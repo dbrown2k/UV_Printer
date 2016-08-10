@@ -104,7 +104,7 @@ void tx_UART(unsigned char data[5], int nBytes) //always going to be sending a s
 		}
 	}
 	
-	
+	delay(2);
 
 }
 
@@ -119,7 +119,7 @@ void rx_UART(unsigned char rx_buffer[]) //
 	{
 		// Read up to 255 characters from the port if they are there
 		
-		int rx_length = read(uart0_filestream, (void*)rx_buffer, 255);		//Filestream, buffer to store in, number of bytes to read (max)
+		int rx_length = read(uart0_filestream, (void*)rx_buffer, 6);		//Filestream, buffer to store in, number of bytes to read (max)
 		if (rx_length < 0)
 		{
 			//An error occured (will occur if there are no bytes)

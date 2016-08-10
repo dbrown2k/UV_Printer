@@ -20,7 +20,7 @@ GPIO Function		Ohms
 4	Output	D6	U1	15
 27	Output	D4	U3	10
 17	Output	D5	U2	6.19 */
-static uint8_t FIFOtable[8] = {FIFO_D2, FIFO_D1, FIFO_D0, FIFO_D3, 
+static unsigned char FIFOtable[8] = {FIFO_D2, FIFO_D1, FIFO_D0, FIFO_D3, 
 								FIFO_D8, FIFO_D6, FIFO_D4, FIFO_D5};
 
 
@@ -99,11 +99,11 @@ void IO_OFF()
 //
 //set the FIFO based on supplied inByte value and table of pins
 //
-void write_FIFO_byte(uint8_t inByte)
+void write_FIFO_byte(unsigned char inByte)
 {
-	for (uint8_t i = 0; i <= 8; i++) //toggle pins
+	for (unsigned char i = 0; i <= 8; i++) //toggle pins
 	{
-		uint8_t temp = inByte; //need temporary value to allow shift
+		unsigned char temp = inByte; //need temporary value to allow shift
 		if ( ((temp >> i) & 1) == 0) //read bit value at position i in Byte
 		{
 			bcm2835_gpio_clr(FIFOtable[i]);
@@ -122,12 +122,12 @@ void write_FIFO_byte(uint8_t inByte)
 //
 //read the status flags, output NOT to give high if case positive
 //
-uint8_t read_FF()
+unsigned char read_FF()
 {
 	return ~bcm2835_gpio_lev(FIFO_nEF);
 }
 
-uint8_t read_EF()
+unsigned char read_EF()
 {
 	return ~bcm2835_gpio_lev(FIFO_nFF);
 }

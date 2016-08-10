@@ -14,9 +14,13 @@
 #ifndef FOCUS_H
 #define FOCUS_H
 
+#include <stdlib.h>
+#include <bcm2835.h>
+#include "uvuart.h"
 
-
-
+unsigned char focusToStop();
+unsigned char focusStep(unsigned char lastpos, int steps);
+unsigned char readStop();
 
 #endif /* FOCUS_H */
 

@@ -20,6 +20,7 @@
 #include <fcntl.h>			//Used for UART
 #include <termios.h>		//Used for UART
 #include "CRC-ATM-8.h"		//call CRC function header
+#include <bcm2835.h>
 
 
 //class uvuart{

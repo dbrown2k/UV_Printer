@@ -37,6 +37,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/CRC-ATM-8.o \
 	${OBJECTDIR}/Focus.o \
+	${OBJECTDIR}/HexCalcs.o \
 	${OBJECTDIR}/MCP23S17_DRV8880.o \
 	${OBJECTDIR}/intuv.o \
 	${OBJECTDIR}/main.o \
@@ -76,6 +77,11 @@ ${OBJECTDIR}/Focus.o: Focus.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Focus.o Focus.cpp
+
+${OBJECTDIR}/HexCalcs.o: HexCalcs.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/HexCalcs.o HexCalcs.cpp
 
 ${OBJECTDIR}/MCP23S17_DRV8880.o: MCP23S17_DRV8880.cpp 
 	${MKDIR} -p ${OBJECTDIR}

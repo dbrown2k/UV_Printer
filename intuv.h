@@ -73,9 +73,9 @@ void setup_io(); // initialise pointers
 void init_io(); // setup input / output pins
 void IO_ON(); // enable level converters
 void IO_OFF(); // disable level converters
-void write_FIFO_byte(uint8_t inByte); //write byte to FIFO, includes translation to match circuit wiring
-uint8_t read_FF(); //read status of full flag
-uint8_t read_EF(); //read status of empty flag
+void write_FIFO_byte(unsigned char inByte); //write byte to FIFO, includes translation to match circuit wiring
+unsigned char read_FF(); //read status of full flag
+unsigned char read_EF(); //read status of empty flag
 
 #endif /* INTUV_H */
 

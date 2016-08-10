@@ -6,6 +6,7 @@
                    projectFiles="true">
       <itemPath>CRC-ATM-8.h</itemPath>
       <itemPath>Focus.h</itemPath>
+      <itemPath>HexCalcs.h</itemPath>
       <itemPath>MCP23S17_DRV8880.h</itemPath>
       <itemPath>intuv.h</itemPath>
       <itemPath>uvuart.h</itemPath>
@@ -19,6 +20,7 @@
                    projectFiles="true">
       <itemPath>CRC-ATM-8.cpp</itemPath>
       <itemPath>Focus.cpp</itemPath>
+      <itemPath>HexCalcs.cpp</itemPath>
       <itemPath>MCP23S17_DRV8880.cpp</itemPath>
       <itemPath>intuv.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
@@ -58,6 +60,10 @@
       <item path="Focus.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Focus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="HexCalcs.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="HexCalcs.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="MCP23S17_DRV8880.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -101,6 +107,10 @@
       <item path="Focus.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Focus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="HexCalcs.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="HexCalcs.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="MCP23S17_DRV8880.cpp" ex="false" tool="1" flavor2="0">
       </item>

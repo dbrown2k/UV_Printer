@@ -20,8 +20,8 @@
 #define    GPPUB     (0x16)     //Pull up resistor B
 
 //settings bytes for DRV8880
-uint8_t IODIR_A = 0x01; //stepper data byte Bank A
-uint8_t GPPU_A = 0x01; //set input pull up resistors
+unsigned char IODIR_A = 0x01; //stepper data byte Bank A
+unsigned char GPPU_A = 0x01; //set input pull up resistors
 // nFault = bit 7; = input (pull up)
 // ENABLE = bit 6; = output
 // DIR = bit 5; = output
@@ -31,8 +31,8 @@ uint8_t GPPU_A = 0x01; //set input pull up resistors
 // TRQ1 = bit 1; = output
 // TRQ0 = bit 0; = output
 
-uint8_t IODIR_B = 0x02; //stepper data byte Bank A
-uint8_t GPPU_B = 0x02; //set input pull up resistors
+unsigned char IODIR_B = 0x02; //stepper data byte Bank A
+unsigned char GPPU_B = 0x02; //set input pull up resistors
 // nSleep = bit 7; = output
 // nFault = bit 6; = input (pull up)
 // DIR = bit 5; = output
@@ -42,15 +42,13 @@ uint8_t GPPU_B = 0x02; //set input pull up resistors
 // TRQ1 = bit 1; = output
 // TRQ0 = bit 0; = output
 
-uint8_t GPIO_A = 0; //stepper data byte Bank A
-uint8_t GPIO_B = 0; //stepper data byte Bank B
-
-uint8_t pwrSave = 0; //have stepper motors enabled 
+unsigned char GPIO_A = 0; //stepper data byte Bank A
+unsigned char GPIO_B = 0; //stepper data byte Bank B
 
 
 //set selected bit to value
 //use case is to send the address to bitWrite(&GPIO_A,4,1);
-void bitWrite(uint8_t * inByte, uint8_t nBit, uint8_t x)
+void bitWrite(unsigned char * inByte, unsigned char nBit, unsigned char x)
 {
 	*inByte ^= (-x ^ (*inByte)) & (1 << nBit);
 }
@@ -82,27 +80,17 @@ void init_MCP23S17()
 	setTorqueB(2); //1 to 4 (25%, 50%, 75%, 100%)
 	setStepSizeA(1); //1th, 2th, 4th, 8th, 16th
 	setStepSizeB(1); //1th, 2th, 4th, 8th, 16th
-	flushGPIO();
+	
 }
 
 //function to write data to MCP23S17
-void digitalSPIWrite(uint8_t addr, uint8_t reg, uint8_t data) {
+void digitalSPIWrite(unsigned char addr, unsigned char reg, unsigned char data) {
   
-	uint8_t buf[3] = {addr, reg, data};
+	unsigned char buf[3] = {addr, reg, data};
 	
   bcm2835_spi_transfern((char*)buf, 3); //recast buf as (char*) 
   
 }
-
-
-
-void flushGPIO(){
-	digitalSPIWrite(StepperAddr, IODIRA, IODIR_A); //set DIR_A
-	digitalSPIWrite(StepperAddr, IODIRB, IODIR_B); //set DIR_B
-	digitalSPIWrite(StepperAddr, GPIOA, GPIO_A); //set GPIO_A
-	digitalSPIWrite(StepperAddr, GPIOB, GPIO_B); //set GPIO_B
-}
-
 
 
 void stepA(){ //send step pulse train _n_ 
@@ -130,7 +118,7 @@ void stepAB(){
   digitalSPIWrite(StepperAddr, GPIOB, GPIO_B); //set GPIO_B
 }
 
-void setEnable(uint8_t EN){ //enable is called less often than flush, so pullup set here 
+void setEnable(unsigned char EN){ //enable is called less often than flush, so pullup set here 
   bitWrite(&GPIO_A,6,EN); //enable / disable, on/off, 0/1
   bitWrite(&GPIO_B,7,1); //nsleep high = awake
   
@@ -143,20 +131,16 @@ void setEnable(uint8_t EN){ //enable is called less often than flush, so pullup 
   
 }
 
-void setPwrSave(uint8_t EN){
-	pwrSave = EN;
-}
-
-void setDirA(uint8_t DIR){
+void setDirA(unsigned char DIR){
   bitWrite(&GPIO_A,5,DIR); //DIR = 0/1
 }
 
-void setDirB(uint8_t DIR){
+void setDirB(unsigned char DIR){
   bitWrite(&GPIO_B,5,DIR); //DIR = 0/1
 }
 
 
-void setTorqueA(uint8_t TRQ){
+void setTorqueA(unsigned char TRQ){
   if (TRQ == 1){
     bitWrite(&GPIO_A,0,1); //TRQ0 = 1
     bitWrite(&GPIO_A,1,1); //TRQ1 = 1
@@ -177,9 +161,10 @@ void setTorqueA(uint8_t TRQ){
     bitWrite(&GPIO_A,1,0); //TRQ1 = 0
   }
   
+  
 }
 
-void setTorqueB(uint8_t TRQ){
+void setTorqueB(unsigned char TRQ){
   if (TRQ == 1){
     bitWrite(&GPIO_B,0,1); //TRQ0 = 1
     bitWrite(&GPIO_B,1,1); //TRQ1 = 1
@@ -200,9 +185,10 @@ void setTorqueB(uint8_t TRQ){
     bitWrite(&GPIO_B,1,0); //TRQ1 = 0
   }
   
+  
 }
 
-void setStepSizeA(uint8_t sSize){ //motor A or B
+void setStepSizeA(unsigned char sSize){ //motor A or B
   if (sSize == 1){
       bitWrite(&GPIO_A,2,0); //M0 = 0
       bitWrite(&GPIO_A,3,0); //M1 = 0
@@ -221,18 +207,20 @@ void setStepSizeA(uint8_t sSize){ //motor A or B
     if (sSize == 8){
       bitWrite(&IODIR_A,2,1); //M0 = z (set to input)
       bitWrite(&GPIO_A,3,0); //M1 = 0
+	  digitalSPIWrite(StepperAddr, IODIRA, IODIR_A); //set DIR_A
   }
 
     if (sSize == 16){
       bitWrite(&IODIR_A,2,1); //M0 = z (set to input)
       bitWrite(&GPIO_A,3,1); //M1 = 1
+	  digitalSPIWrite(StepperAddr, IODIRA, IODIR_A); //set DIR_A
   }
 
-
+	
 }
 
 
-void setStepSizeB(uint8_t sSize){ //motor B
+void setStepSizeB(unsigned char sSize){ //motor B
   if (sSize == 1){
       bitWrite(&GPIO_B,2,0); //M0 = 0
       bitWrite(&GPIO_B,3,0); //M1 = 0
@@ -251,13 +239,16 @@ void setStepSizeB(uint8_t sSize){ //motor B
     if (sSize == 8){
       bitWrite(&IODIR_B,2,1); //M0 = z (set to input)
       bitWrite(&GPIO_B,3,0); //M1 = 0
+	  digitalSPIWrite(StepperAddr, IODIRB, IODIR_B); //set DIR_B
   }
 
     if (sSize == 16){
       bitWrite(&IODIR_B,2,1); //M0 = z (set to input)
       bitWrite(&GPIO_B,3,1); //M1 = 1
+	  digitalSPIWrite(StepperAddr, IODIRB, IODIR_B); //set DIR_B
   }
 
+  
 }
 
 

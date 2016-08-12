@@ -37,7 +37,7 @@ void enTEC(unsigned char en);
 
 void init8DAC();
 void calcx8volt(float volt);
-void setDAC(float volts[8]);
+void set8DAC(float volts[8]);
 
 void initADC();
 float readADC();

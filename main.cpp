@@ -48,9 +48,9 @@ int main(int argc, char **argv)
 	IO_ON(); // enable level converters
 	reset_FIFO();
 	setup_spi(); //setup SPI
-	//init_MCP23S17(); //initialise MCP23S17 (SPI stepper controller)
-	//initFreq(); // initialise frequency generator
-	//init8DAC(); // initialise x8 UV laser DAC
+	init_MCP23S17(); //initialise MCP23S17 (SPI stepper controller)
+	initFreq(); // initialise frequency generator
+	init8DAC(); // initialise x8 UV laser DAC
 	initADC(); //initialise ADC - UV laser current measure
   
 	
@@ -60,24 +60,33 @@ int main(int argc, char **argv)
 	//enTrigger(1);
 	//delay(2000);
 	
+	
 	//focMotor = focusStep(focMotor, 5); //test focus stepper
 	//focMotor = focusStep(focMotor, -5);	
+	
 	
 	//setFreq(1.525); //sets the frequency in MHz
 	
 		
 	//float DAC8volts[] = {3.455, 3.363, 2.796, 3.020, 3.042, 1.638, 2.116, 1.727}; //from validation tests
 	//float DAC8volts[] = {0, 0, 0, 0, 0, 0, 0, 0};
-	//setDAC(DAC8volts);
+	//set8DAC(DAC8volts);
+	
 	
 	//std::cout << readADC() << std::endl; // make reading from ADC
+	
 	
 	//std::cout << (int)read_FF() << std::endl; // Read FIFO status flags
 	//std::cout << (int)read_EF() << std::endl;
 	
 	
-	std::cout << reqTemp() << std::endl; // make reading from the temp sensor
-	std::cout << reqHumd() << std::endl; // make reading from the humidity sensor
+	//std::cout << reqTemp() << std::endl; // make reading from the temp sensor
+	//std::cout << reqHumd() << std::endl; // make reading from the humidity sensor
+	
+	
+	//setTECTemp(25); // need to set the relationship between temp and DAC voltage
+	//enTEC(1); //enable TEC
+	//std::cout << readTEC() << std::endl; // make reading from the TEC monitor
 	
 	
 	/* //test SPI stepper
@@ -112,7 +121,8 @@ int main(int argc, char **argv)
     
   
   //shut down systems
-  //enTrigger(0);
+  enTrigger(0);
+  enTEC(0);
   stop_UART();
   IO_OFF();
   

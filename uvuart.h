@@ -13,7 +13,7 @@
 
 
 #ifndef uvuart_H //use header guard to prevent muntiple copies
-	#define uvuart_H
+#define uvuart_H
 //these include files should have their own header guards
 #include <stdio.h>
 #include <unistd.h>			//Used for UART
@@ -23,22 +23,17 @@
 #include <bcm2835.h>
 
 
-//class uvuart{
 
-//public: //public functions to simplify the interface to the printer head
 
-	//commands to control the print head
-	
-//private:	
 void start_UART();
 void config_UART();
 void flush_UART();
 void stop_UART();
 void tx_UART(unsigned char tx_buffer[5], int nBytes);
 unsigned char  rx_UART(unsigned char rx_buffer2[]); //returns pointer need function to parse the length of the array
+void returnCheck(); // check the value of the 
 
 
-//};
 
 #endif /* uvuart_H */
 

@@ -22,6 +22,9 @@
 
 float reqTemp();
 float reqHumd();
+float readTEC();
+
+
 
 #endif /* LOGGING_H */
 

@@ -16,9 +16,10 @@
 int uart0_filestream = -1;
 
 
-
-
-void start_UART() //initialise the UART stream
+//
+// initialise the UART stream
+//
+void start_UART() 
 {
 //OPEN THE UART Ref. http://www.raspberry-projects.com/pi/programming-in-c/uart-serial-port/using-the-uart
 //The flags (defined in fcntl.h):
@@ -32,21 +33,22 @@ void start_UART() //initialise the UART stream
 //											immediately with a failure status if the output can't be written immediately.
 //
 //	O_NOCTTY - When set and path identifies a terminal device, open() shall not cause the terminal device to become the controlling terminal for the process.
-uart0_filestream = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);		//Open in non blocking read/write mode
-if (uart0_filestream == -1)
-{
-	//ERROR - CAN'T OPEN SERIAL PORT
-	perror("Error - Unable to open UART.  Ensure it is not in use by another application");
-}	
+	uart0_filestream = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);		//Open in non blocking read/write mode
+	
+	if (uart0_filestream == -1)
+	{
+		//ERROR - CAN'T OPEN SERIAL PORT
+		perror("Error - Unable to open UART.  Ensure it is not in use by another application");
+	}	
 	
 }
 
 
-
-
-void config_UART() //configure the UART baud etc.
+//
+// configure the UART baud etc.
+//
+void config_UART() 
 {
-//CONFIGURE THE UART
 //The flags (defined in /usr/include/termios.h - see http://pubs.opengroup.org/onlinepubs/007908799/xsh/termios.h.html):
 //	Baud rate:- B1200, B2400, B4800, B9600, B19200, B38400, B57600, B115200, B230400, B460800, B500000, B576000, B921600, B1000000, B1152000, B1500000, B2000000, B2500000, B3000000, B3500000, B4000000
 //	CSIZE:- CS5, CS6, CS7, CS8
@@ -56,18 +58,20 @@ void config_UART() //configure the UART baud etc.
 //	ICRNL - Map CR to NL on input (Use for ASCII comms where you want to auto correct end of line characters - don't use for bianry comms!)
 //	PARENB - Parity enable
 //	PARODD - Odd parity (else even)
-struct termios options;
-tcgetattr(uart0_filestream, &options);
-options.c_cflag = B115200 | CS8 | CLOCAL | CREAD;		//<Set baud rate
-options.c_iflag = IGNPAR;
-options.c_oflag = 0;
-options.c_lflag = 0;
-tcflush(uart0_filestream, TCIFLUSH);
-tcsetattr(uart0_filestream, TCSANOW, &options);	
+	struct termios options;
+	tcgetattr(uart0_filestream, &options);
+	options.c_cflag = B115200 | CS8 | CLOCAL | CREAD;		//<Set baud rate
+	options.c_iflag = IGNPAR;
+	options.c_oflag = 0;
+	options.c_lflag = 0;
+	tcflush(uart0_filestream, TCIFLUSH);
+	tcsetattr(uart0_filestream, TCSANOW, &options);	
 	
 }
 
 
+
+// flush the UART buffers
 void flush_UART()
 {
 	tcflush(uart0_filestream, TCIFLUSH);
@@ -75,16 +79,18 @@ void flush_UART()
 
 
 
-void stop_UART() //close UART stream
+// close UART stream
+void stop_UART() 
 {
-//----- CLOSE THE UART -----
-close(uart0_filestream);	
+	close(uart0_filestream);	
 }
 
 
 
-
-void tx_UART(unsigned char data[5], int nBytes) //always going to be sending a set number of bytes
+//
+// Transmit data, always going to be sending a set number of bytes
+//
+void tx_UART(unsigned char data[5], int nBytes) 
 {
 	flush_UART(); //flush the buffer before sending next command
 	
@@ -127,6 +133,7 @@ unsigned char rx_UART(unsigned char rx_buffer[]) //
 		if (rx_length < 0)
 		{
 			//An error occurred (will occur if there are no bytes)
+			perror("UART RX < 0 bytes");
 		}
 		else if (rx_length == 0)
 		{
@@ -153,3 +160,19 @@ unsigned char rx_UART(unsigned char rx_buffer[]) //
 	//read buffer and place data into supplied array
 	unsigned char pass = rx_UART(pointer_temp);
  */
+
+
+//
+// Generic read to check command completed successfully
+//
+void returnCheck()
+{
+	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
+	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
+	
+	if (pointer_temp[0] == 0x01 && errorVal == 0x00)
+	{
+		perror("Command Failed on Arduino");
+	}
+			 
+}

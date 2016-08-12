@@ -36,11 +36,12 @@
 #define		ADCADDR		(0x68)	// MCP3421 ADC I2C addr
 
 
-unsigned long tempword = 0; //variable for the frequency byte
+unsigned long tempword = 0; //variable byte holder
 
 
-
-
+//
+// this section is for setting the frequency generator
+//
 void calcFreq(float freq) //frequency in MHz
 {
 	long double temp = ceil((freq / 125) * exp2(32)); //MEMS oscillator @ 125MHz
@@ -48,7 +49,8 @@ void calcFreq(float freq) //frequency in MHz
 }
 
 
-unsigned char pullByte(unsigned long inword, int byteno)
+//extract byte from 32bit word
+unsigned char pullByte(unsigned long inword, int byteno) 
 {
 	unsigned char *p = (unsigned char*)&inword;
 	//use p[0],p[1],p[2],p[3] to access the bytes.
@@ -59,7 +61,8 @@ unsigned char pullByte(unsigned long inword, int byteno)
 }
 
 
-unsigned char byteTranspose(int byteno) // need to map the data to the correct pins
+// need to map the data to the correct pins
+unsigned char byteTranspose(int byteno) 
 {
 	unsigned char temp = pullByte(tempword, byteno);
 	unsigned char outByte = 0;
@@ -91,18 +94,21 @@ unsigned char byteTranspose(int byteno) // need to map the data to the correct p
 }
 
 
-void initFreq() //setup GPIO for frequency generator
+//setup GPIO for frequency generator
+void initFreq() 
 {
 	unsigned char setA[] = {0x0C, ADDRFreq, IODIRA, 0x00, NULLbyte};
 	tx_UART(setA, 5);
+	returnCheck(); // error check the return data
 	
 	unsigned char setB[] = {0x0C, ADDRFreq, IODIRB, 0x00, NULLbyte};
 	tx_UART(setB, 5);
+	returnCheck(); // error check the return data
 }
 
 
-
-void setFreq(float freq) //calculate frequency code and send to frequency generator
+//calculate frequency code and send to frequency generator
+void setFreq(float freq) 
 {
 	calcFreq(freq); // calculate frequency
 	
@@ -122,29 +128,47 @@ void setFreq(float freq) //calculate frequency code and send to frequency genera
 	//std::cout << byteTranspose(0) << std::endl;
 	
 	tx_UART(FQlow_CLKlow, 5); //FQ_UD low & CLK low
+	returnCheck(); // error check the return data
 	tx_UART(phase, 5); //phase data
+	returnCheck(); // error check the return data
 	tx_UART(CLKhigh, 5); //CLK high - load
+	returnCheck(); // error check the return data
 	tx_UART(FQlow_CLKlow, 5); //FQ_UD low & CLK low
+	returnCheck(); // error check the return data
 	tx_UART(bit32_25, 5); //bit 32 through 25
+	returnCheck(); // error check the return data
 	tx_UART(CLKhigh, 5); //CLK high - load
+	returnCheck(); // error check the return data
 	tx_UART(FQlow_CLKlow, 5); //FQ_UD low & CLK low
+	returnCheck(); // error check the return data
 	tx_UART(bit24_17, 5); //bit 24 through 17
+	returnCheck(); // error check the return data
 	tx_UART(CLKhigh, 5); //CLK high - load
+	returnCheck(); // error check the return data
 	tx_UART(FQlow_CLKlow, 5); //FQ_UD low & CLK low
+	returnCheck(); // error check the return data
 	tx_UART(bit16_9, 5); //bit 16 through 9
+	returnCheck(); // error check the return data
 	tx_UART(CLKhigh, 5); //CLK high - load
+	returnCheck(); // error check the return data
 	tx_UART(FQlow_CLKlow, 5); //FQ_UD low & CLK low
+	returnCheck(); // error check the return data
 	tx_UART(bit8_1, 5); //bit 8 through 1
+	returnCheck(); // error check the return data
 	tx_UART(CLKhigh, 5); //CLK high - load
+	returnCheck(); // error check the return data
 	tx_UART(FQlow_CLKlow, 5); //FQ_UD low & CLK low
+	returnCheck(); // error check the return data
 	tx_UART(FQhigh_CLKlow, 5); //FQ_UD high & CLK low
+	returnCheck(); // error check the return data
 	tx_UART(FQlow_CLKlow, 5); //FQ_UD low & CLK low
-	
+	returnCheck(); // error check the return data
 }
 
 
-
-
+//
+// This section for the MAX5215 DACs
+//
 void calcVolt(float volt, float Ref) //calculate trigger voltage code
 {
 	double temp = ceil((volt / Ref) * exp2(14)); //Reference voltage 3.3v, 14bits
@@ -155,7 +179,8 @@ void calcVolt(float volt, float Ref) //calculate trigger voltage code
 
 
 
-void setVolt(unsigned char SelAdr, float volt, float Ref) // set the trigger laser voltage
+// set the specified DAC laser voltage
+void setVolt(unsigned char SelAdr, float volt, float Ref) 
 {
 	calcVolt(volt, Ref);
 	
@@ -166,59 +191,76 @@ void setVolt(unsigned char SelAdr, float volt, float Ref) // set the trigger las
 	
 	//std::cout << (int)byte1 << std::endl;
 	//std::cout << (int)byte0 << std::endl;
-	
-	
+		
 	unsigned char setTrig[] = {0x09, SelAdr, CODELOAD, byte1, byte0}; //set trigger laser DAC to 1.122v
 	
 	tx_UART(configTrig, 5);
+	returnCheck(); // error check the return data
+	
 	tx_UART(setTrig, 5);
+	returnCheck(); // error check the return data
 }
 
-void setTrigVolt(float volt)
+//
+// Setup the trigger laser
+//
+void setTrigVolt(float volt) //set the specified voltage to trigger DAC
 {
 	setVolt(ADDRtrig, volt, REFTrig);
+	returnCheck(); // error check the return data
 }
 
 
-void enTrigger(unsigned char en) //enable / disable trigger laser
+//enable / disable trigger laser
+void enTrigger(unsigned char en) 
 {
 	unsigned char swTrigger[] = {0x0D, en, NULLbyte, NULLbyte, NULLbyte}; 
 	tx_UART(swTrigger, 5);
+	returnCheck(); // error check the return data
 }
 
 
+//
+// setup the TEC controller
+//
 void setTECTemp(float temp) //set temperature of the TEC DAC
 {
 	float volt = 1.25; // this needs updating to convert temperature to voltage at DAC
 	setVolt(ADDRTEC, volt, REFTEC);
+	returnCheck(); // error check the return data
 }
 
 
+// enable / disable the TEC
 void enTEC(unsigned char en)
 {
 	unsigned char swTEC[] = {0x01, en, NULLbyte, NULLbyte, NULLbyte}; 
 	tx_UART(swTEC, 5);
-	
+	returnCheck(); // error check the return data
 }
 
 
+//
+// setup the x8 DAC for the UV laser
+//
 void init8DAC() //set REF to 4.096v
 {
 	unsigned char init8DAC[] = {0x09, DAC8ADDR, DAC8REF, NULLbyte, NULLbyte}; 
 	tx_UART(init8DAC, 5);
+	returnCheck(); // error check the return data
 }
 
 
-
-void calcx8volt(float volt) //calculate voltage code
+//calculate voltage code
+void calcx8volt(float volt) 
 {
 	double temp = ceil((volt / 4.096) * exp2(12)); //Reference voltage 4.096v, 12bits
 	tempword = (unsigned long)temp << 4; //shift bits to move from 16bit to 12bits
 }
 
 
-
-void setDAC(float volts[8]) //set the voltages based on array of 8 values
+//set the voltages based on array of 8 values
+void set8DAC(float volts[8]) 
 {
 	
 	unsigned char tmpaddr[] = {0x09, DAC8ADDR, NULLbyte, NULLbyte, NULLbyte};
@@ -234,18 +276,23 @@ void setDAC(float volts[8]) //set the voltages based on array of 8 values
 	
 	unsigned char vset[] = {0x09, DAC8ADDR, DAC8SET, NULLbyte, NULLbyte}; //apply settings to all DACs
 	tx_UART(vset, 5);
-	
+	returnCheck(); // error check the return data
 }
 
 
+//
+// setup the ADC for monitoring the UV laser current
+//
 void initADC()
 {
 	unsigned char initADC[] = {0x07, ADCADDR, 0x0B, NULLbyte, NULLbyte}; 
 	tx_UART(initADC, 5);
+	returnCheck(); // error check the return data
 }
 
 
-float readADC() //initialise one-shot reading
+//initialise one-shot reading
+float readADC() 
 {
 	unsigned char requestMeasure[] = {0x07, ADCADDR, 0x8B, NULLbyte, NULLbyte}; 
 	tx_UART(requestMeasure, 5);

@@ -40,6 +40,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/HexCalcs.o \
 	${OBJECTDIR}/MCP23S17_DRV8880.o \
 	${OBJECTDIR}/intuv.o \
+	${OBJECTDIR}/logging.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/uvuart.o
 
@@ -92,6 +93,11 @@ ${OBJECTDIR}/intuv.o: intuv.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/intuv.o intuv.cpp
+
+${OBJECTDIR}/logging.o: logging.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/logging.o logging.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}

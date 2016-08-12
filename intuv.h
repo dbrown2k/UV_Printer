@@ -73,6 +73,7 @@ void setup_io(); // initialise pointers
 void init_io(); // setup input / output pins
 void IO_ON(); // enable level converters
 void IO_OFF(); // disable level converters
+void reset_FIFO(); // reset FIFO
 void write_FIFO_byte(unsigned char inByte); //write byte to FIFO, includes translation to match circuit wiring
 unsigned char read_FF(); //read status of full flag
 unsigned char read_EF(); //read status of empty flag

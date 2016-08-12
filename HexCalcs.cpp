@@ -9,6 +9,7 @@
  * for configuration processes
  */
 
+#define		NULLbyte	(0x00)
 
 #define		IODIRA		(0x00)	// MCP23x17 I/O Direction Register
 #define		IODIRB		(0x01)	// 1 = Input (default), 0 = Output
@@ -17,27 +18,52 @@
 #define		STLOAD		(0x40)
 #define		CLKlow		(0x00)
 #define		CLKLOAD		(0x80)
-#define		ADDRFreq	(0x27)	// address of the frequency generator IO expander
+#define		ADDRFreq	(0x27)	// address I2C of the frequency generator IO expander
+
+#define		ADDRtrig	(0x1C)	// trigger laser MAX5215 DAC I2C address
+#define		REFTrig		(3.3)	// trigger DAC reference voltage
+#define		USERCONFIG	(0x08)	//
+#define		CODELOAD	(0x01)	// read code and load into registers
+
+#define		ADDRTEC		(0x1F)	// address of the TEC MAX5215 DAC
+#define		REFTEC		(1.25)	// TEC DAC reference voltage
+
+#define		DAC8ADDR	(0x10)	// 8x DAC I2C address
+#define		DAC8REF		(0x23)	// 8x DAC REF to 4.096v
+#define		DAC8BASE	(0x80)	// x8 MAX 5825 DAC base adderss
+#define		DAC8SET		(0x98)	// apply DAC voltages
+
+#define		ADCADDR		(0x68)	// MCP3421 ADC I2C addr
 
 
-unsigned long frequencyword = 0; //variable for the frequency byte
+unsigned long tempword = 0; //variable for the frequency byte
+
+
 
 
 void calcFreq(float freq) //frequency in MHz
 {
-	long double temp = ((freq / 125) * exp2(32));
-	frequencyword = (unsigned long)temp;
+	long double temp = ceil((freq / 125) * exp2(32)); //MEMS oscillator @ 125MHz
+	tempword = (unsigned long)temp;
 }
 
 
-unsigned char pullByte(int byteno)
+unsigned char pullByte(unsigned long inword, int byteno)
 {
-	unsigned char *p = (unsigned char*)&frequencyword;
+	unsigned char *p = (unsigned char*)&inword;
 	//use p[0],p[1],p[2],p[3] to access the bytes.
 	
-	unsigned char temp = p[byteno]; //copy required byte
-	unsigned char outByte = 0;
+	unsigned char outByte = p[byteno]; //copy required byte
 	
+	return outByte;
+}
+
+
+unsigned char byteTranspose(int byteno) // need to map the data to the correct pins
+{
+	unsigned char temp = pullByte(tempword, byteno);
+	unsigned char outByte = 0;
+		
 	//std::cout << (int)temp << std::endl;
 	/*need to map the word to the pins
 	 * out[7] = in[0]
@@ -60,39 +86,40 @@ unsigned char pullByte(int byteno)
 	outByte ^= (-((temp >> 2) & 1) ^ outByte) & (1 << 1);
 	outByte ^= (-((temp >> 3) & 1) ^ outByte) & (1 << 0);
 	
-	std::cout << (int)outByte << std::endl;
-	return outByte;
+	//std::cout << (int)outByte << std::endl;
+	
 }
 
 
 void initFreq() //setup GPIO for frequency generator
 {
-	unsigned char setA[] = {0x0C, ADDRFreq, IODIRA, 0x00, 0x00};
+	unsigned char setA[] = {0x0C, ADDRFreq, IODIRA, 0x00, NULLbyte};
 	tx_UART(setA, 5);
 	
-	unsigned char setB[] = {0x0C, ADDRFreq, IODIRB, 0x00, 0x00};
+	unsigned char setB[] = {0x0C, ADDRFreq, IODIRB, 0x00, NULLbyte};
 	tx_UART(setB, 5);
 }
 
 
-void setFreq(float freq)
+
+void setFreq(float freq) //calculate frequency code and send to frequency generator
 {
 	calcFreq(freq); // calculate frequency
 	
-	unsigned char FQlow_CLKlow[] = {0x0C, ADDRFreq, GPIOA, CLKlow, 0x00};
-	unsigned char FQhigh_CLKlow[] = {0x0C, ADDRFreq, GPIOA, CLKLOAD, 0x00};
-	unsigned char CLKhigh[] = {0x0C, ADDRFreq, GPIOA, STLOAD, 0x00};
-	unsigned char phase[] = {0x0C, ADDRFreq, GPIOB, 0x00, 0x00};
-	unsigned char bit32_25[] = {0x0C, ADDRFreq, GPIOB, pullByte(3), 0x00};
-	unsigned char bit24_17[] = {0x0C, ADDRFreq, GPIOB, pullByte(2), 0x00};
-	unsigned char bit16_9[] = {0x0C, ADDRFreq, GPIOB, pullByte(1), 0x00};
-	unsigned char bit8_1[] = {0x0C, ADDRFreq, GPIOB, pullByte(0), 0x00};
+	unsigned char FQlow_CLKlow[] = {0x0C, ADDRFreq, GPIOA, CLKlow, NULLbyte};
+	unsigned char FQhigh_CLKlow[] = {0x0C, ADDRFreq, GPIOA, CLKLOAD, NULLbyte};
+	unsigned char CLKhigh[] = {0x0C, ADDRFreq, GPIOA, STLOAD, NULLbyte};
+	unsigned char phase[] = {0x0C, ADDRFreq, GPIOB, 0x00, NULLbyte};
+	unsigned char bit32_25[] = {0x0C, ADDRFreq, GPIOB, byteTranspose(3), NULLbyte};
+	unsigned char bit24_17[] = {0x0C, ADDRFreq, GPIOB, byteTranspose(2), NULLbyte};
+	unsigned char bit16_9[] = {0x0C, ADDRFreq, GPIOB, byteTranspose(1), NULLbyte};
+	unsigned char bit8_1[] = {0x0C, ADDRFreq, GPIOB, byteTranspose(0), NULLbyte};
 	
-	std::cout << frequencyword << std::endl;
-	//std::cout << pullByte(3) << std::endl;
-	//std::cout << pullByte(2) << std::endl;
-	//std::cout << pullByte(1) << std::endl;
-	//std::cout << pullByte(0) << std::endl;
+	//std::cout << frequencyword << std::endl;
+	//std::cout << byteTranspose(3) << std::endl;
+	//std::cout << byteTranspose(2) << std::endl;
+	//std::cout << byteTranspose(1) << std::endl;
+	//std::cout << byteTranspose(0) << std::endl;
 	
 	tx_UART(FQlow_CLKlow, 5); //FQ_UD low & CLK low
 	tx_UART(phase, 5); //phase data
@@ -118,22 +145,132 @@ void setFreq(float freq)
 
 
 
-
-
-
-/*
-unsigned char setval1[] = {0x09, 0x1C, 0x08, 0x00, 0x10}; //setup the trigger laser DAC configuration
-	unsigned char setval2[] = {0x09, 0x1C, 0x01, 0x57, 0x0C}; //set trigger laser DAC to 1.7v
-	unsigned char setval3[] = {0x0D, 0x01, 0x00, 0x00, 0x00}; //enable trigger laser
+void calcVolt(float volt, float Ref) //calculate trigger voltage code
+{
+	double temp = ceil((volt / Ref) * exp2(14)); //Reference voltage 3.3v, 14bits
+	tempword = (unsigned long)temp << 2; //shift bits to move from 16bit to 14bits
 	
-	tx_UART(setval1, 5);
+	//std::cout << temp << std::endl;
+}
+
+
+
+void setVolt(unsigned char SelAdr, float volt, float Ref) // set the trigger laser voltage
+{
+	calcVolt(volt, Ref);
 	
-	tx_UART(setval2, 5);
+	unsigned char configTrig[] = {0x09, SelAdr, USERCONFIG, NULLbyte, 0x10}; //setup the trigger laser DAC configuration
 	
-	tx_UART(setval3, 5);
- * 
- */
+	unsigned char byte1= pullByte(tempword, 1);
+	unsigned char byte0= pullByte(tempword, 0);
+	
+	//std::cout << (int)byte1 << std::endl;
+	//std::cout << (int)byte0 << std::endl;
+	
+	
+	unsigned char setTrig[] = {0x09, SelAdr, CODELOAD, byte1, byte0}; //set trigger laser DAC to 1.122v
+	
+	tx_UART(configTrig, 5);
+	tx_UART(setTrig, 5);
+}
+
+void setTrigVolt(float volt)
+{
+	setVolt(ADDRtrig, volt, REFTrig);
+}
+
+
+void enTrigger(unsigned char en) //enable / disable trigger laser
+{
+	unsigned char swTrigger[] = {0x0D, en, NULLbyte, NULLbyte, NULLbyte}; 
+	tx_UART(swTrigger, 5);
+}
+
+
+void setTECTemp(float temp) //set temperature of the TEC DAC
+{
+	float volt = 1.25; // this needs updating to convert temperature to voltage at DAC
+	setVolt(ADDRTEC, volt, REFTEC);
+}
+
+
+void enTEC(unsigned char en)
+{
+	unsigned char swTEC[] = {0x01, en, NULLbyte, NULLbyte, NULLbyte}; 
+	tx_UART(swTEC, 5);
+	
+}
+
+
+void init8DAC() //set REF to 4.096v
+{
+	unsigned char init8DAC[] = {0x09, DAC8ADDR, DAC8REF, NULLbyte, NULLbyte}; 
+	tx_UART(init8DAC, 5);
+}
 
 
 
+void calcx8volt(float volt) //calculate voltage code
+{
+	double temp = ceil((volt / 4.096) * exp2(12)); //Reference voltage 4.096v, 12bits
+	tempword = (unsigned long)temp << 4; //shift bits to move from 16bit to 12bits
+}
 
+
+
+void setDAC(float volts[8]) //set the voltages based on array of 8 values
+{
+	
+	unsigned char tmpaddr[] = {0x09, DAC8ADDR, NULLbyte, NULLbyte, NULLbyte};
+	
+	for (int i = 0; i < 8; i++)
+	{
+		calcx8volt(volts[i]);
+		tmpaddr[2] = DAC8BASE + i;
+		tmpaddr[3] = pullByte(tempword, 1);
+		tmpaddr[4] = pullByte(tempword, 0);
+		tx_UART(tmpaddr, 5);
+	}
+	
+	unsigned char vset[] = {0x09, DAC8ADDR, DAC8SET, NULLbyte, NULLbyte}; //apply settings to all DACs
+	tx_UART(vset, 5);
+	
+}
+
+
+void initADC()
+{
+	unsigned char initADC[] = {0x07, ADCADDR, 0x0B, NULLbyte, NULLbyte}; 
+	tx_UART(initADC, 5);
+}
+
+
+float readADC() //initialise one-shot reading
+{
+	unsigned char requestMeasure[] = {0x07, ADCADDR, 0x8B, NULLbyte, NULLbyte}; 
+	tx_UART(requestMeasure, 5);
+
+	delay(100); //wait for reading to occur (at 16bit = 15 samples per second, so need at least 66ms
+	
+	unsigned char readCMD[]= {0x08, ADCADDR, NULLbyte, NULLbyte, NULLbyte};
+	tx_UART(readCMD, 5);
+
+	
+	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
+	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
+	
+	if (errorVal == 0x01) {perror("UART RX error");} // issue error if read fails
+	
+	int x;
+	//bit shift combine bytes into integer
+	x = pointer_temp[1];      //send high to right most bits
+	x = x << 8; // shift high over 8 bits
+	x |= pointer_temp[2]; //OR low bits to total
+	
+	//std::cout << (int)pointer_temp[1] << std::endl;
+	//std::cout << (int)pointer_temp[2] << std::endl;
+	
+	float current = (float)x * 0.0390625; //factor to convert from recorded value to mA
+
+	return current;
+}

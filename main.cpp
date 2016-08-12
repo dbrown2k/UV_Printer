@@ -11,7 +11,7 @@
  * Created on 14 March 2016, 10:13
  * 
  * Access from ARM Running Linux
- * 
+ * /root/.netbeans/remote/192.168.20.27/x10-workstation-Windows-x86_64/E/Transporter/workspace/UV_Printer/dist/Debug/GNU-Linux/uv_printe
  */
  
  
@@ -21,7 +21,8 @@
 #include "intuv.h" // FIFO IO setup
 #include "MCP23S17_DRV8880.h" //SPI stepper motor controller
 #include "Focus.h" // bi polar micro motor - focus controller
-#include "HexCalcs.h" // calcs for setting up components that use hex streams
+#include "HexCalcs.h" // calcs for setting up components that use hex streams; DACs & ADC
+#include "logging.h" // logging of temp / humidity and other I/Os
 
 
 //function definitions
@@ -45,69 +46,73 @@ int main(int argc, char **argv)
 	setup_io(); // Set up gpio pointer for direct register access
 	init_io(); // setup input / output pins
 	IO_ON(); // enable level converters
+	reset_FIFO();
 	setup_spi(); //setup SPI
-	init_MCP23S17(); //initialise MCP23S17 (SPI stepper controller)
-	initFreq();
+	//init_MCP23S17(); //initialise MCP23S17 (SPI stepper controller)
+	//initFreq(); // initialise frequency generator
+	//init8DAC(); // initialise x8 UV laser DAC
+	initADC(); //initialise ADC - UV laser current measure
   
 	
-	//'main' function program here
+	// 'main' function program here
+	
+	//setTrigVolt(1.1); //test trigger laser
+	//enTrigger(1);
+	//delay(2000);
+	
+	//focMotor = focusStep(focMotor, 5); //test focus stepper
+	//focMotor = focusStep(focMotor, -5);	
+	
+	//setFreq(1.525); //sets the frequency in MHz
+	
+		
+	//float DAC8volts[] = {3.455, 3.363, 2.796, 3.020, 3.042, 1.638, 2.116, 1.727}; //from validation tests
+	//float DAC8volts[] = {0, 0, 0, 0, 0, 0, 0, 0};
+	//setDAC(DAC8volts);
+	
+	//std::cout << readADC() << std::endl; // make reading from ADC
+	
+	//std::cout << (int)read_FF() << std::endl; // Read FIFO status flags
+	//std::cout << (int)read_EF() << std::endl;
 	
 	
-	
-	/*
-	focMotor = focusStep(focMotor, 250); //test focus stepper
-	focMotor = focusStep(focMotor, -250);	
-	*/
+	std::cout << reqTemp() << std::endl; // make reading from the temp sensor
+	std::cout << reqHumd() << std::endl; // make reading from the humidity sensor
 	
 	
-	
-	
-	//define array for received data
-	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0};
-	//read buffer and place data into supplied array
-	rx_UART(pointer_temp);
-	
-	
-	setFreq(0.5);
-	
-	
-	/*
+	/* //test SPI stepper
 	int steps;
 	std::cout << "Please enter an number of steps: ";
 	std::cin >> steps;
 	
- 
-  //test SPI stepper
-  setEnable(1);
+	setEnable(1);
+	 
+	setStepSizeA(1);
+	 
+	for (int i = 0; i < steps; i++)
+	{
+	  stepA();
+	  delay(1);
+	 }
+	  	
+	 setStepSizeB(16);
   
-  setStepSizeA(1);
+	 for (int i = 0; i < steps; i++)
+	 {
+	 stepB();
+	 delay(1);
+	 
+	 }
+	 
+	 setEnable(0);
   
-  for (int i = 0; i < steps; i++)
-  {
-   stepA();
-   delay(1);
-  }
-	
-  setStepSizeB(16);
-  
-  for (int i = 0; i < steps; i++)
-  {
-   stepB();
-   delay(1);
-   
-  }
-  
-  setEnable(0);
-  
-  
-  unsigned char setval4[] = {0x0D, 0x00, 0x00, 0x00, 0x00}; //disable trigger laser
-  tx_UART(setval4, 5);
+	*/
   
   
-  std::cout << readStop();
+    
   
-  */
   //shut down systems
+  //enTrigger(0);
   stop_UART();
   IO_OFF();
   

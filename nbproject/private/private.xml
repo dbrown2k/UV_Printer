@@ -7,15 +7,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/Transporter/workspace/UV_Printer/intuv.h</file>
             <file>file:/E:/Transporter/workspace/UV_Printer/main.cpp</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/uvuart.h</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/Focus.h</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/uvuart.cpp</file>
+            <file>file:/E:/Transporter/workspace/UV_Printer/HexCalcs.cpp</file>
             <file>file:/E:/Transporter/workspace/UV_Printer/Focus.cpp</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/CRC-ATM-8.cpp</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/CRC-ATM-8.h</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/intuv.cpp</file>
+            <file>file:/E:/Transporter/workspace/UV_Printer/HexCalcs.h</file>
         </group>
     </open-files>
 </project-private>

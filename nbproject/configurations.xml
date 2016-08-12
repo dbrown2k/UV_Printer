@@ -9,6 +9,7 @@
       <itemPath>HexCalcs.h</itemPath>
       <itemPath>MCP23S17_DRV8880.h</itemPath>
       <itemPath>intuv.h</itemPath>
+      <itemPath>logging.h</itemPath>
       <itemPath>uvuart.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -23,6 +24,7 @@
       <itemPath>HexCalcs.cpp</itemPath>
       <itemPath>MCP23S17_DRV8880.cpp</itemPath>
       <itemPath>intuv.cpp</itemPath>
+      <itemPath>logging.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>uvuart.cpp</itemPath>
     </logicalFolder>
@@ -73,6 +75,10 @@
       </item>
       <item path="intuv.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="logging.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="logging.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="uvuart.cpp" ex="false" tool="1" flavor2="0">
@@ -119,6 +125,10 @@
       <item path="intuv.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="intuv.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="logging.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="logging.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

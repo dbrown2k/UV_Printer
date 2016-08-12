@@ -21,7 +21,7 @@ GPIO Function		Ohms
 27	Output	D4	U3	10
 17	Output	D5	U2	6.19 */
 static unsigned char FIFOtable[8] = {FIFO_D2, FIFO_D1, FIFO_D0, FIFO_D3, 
-								FIFO_D8, FIFO_D6, FIFO_D4, FIFO_D5};
+										FIFO_D8, FIFO_D6, FIFO_D4, FIFO_D5};
 
 
 
@@ -49,6 +49,7 @@ void init_io()
   bcm2835_gpio_fsel(FIFO_D8, BCM2835_GPIO_FSEL_OUTP);
   bcm2835_gpio_fsel(FIFO_nEF, BCM2835_GPIO_FSEL_OUTP);
   bcm2835_gpio_fsel(FIFO_nFF, BCM2835_GPIO_FSEL_OUTP);
+  
    
 //set outputs LOW
   bcm2835_gpio_clr(FIFO_D0);
@@ -68,8 +69,8 @@ void init_io()
   
   
  //set inputs  
-  //bcm2835_gpio_fsel(FIFO_nEF, BCM2835_GPIO_FSEL_INPT);
-  //bcm2835_gpio_fsel(FIFO_nFF, BCM2835_GPIO_FSEL_INPT);
+  bcm2835_gpio_fsel(FIFO_nEF, BCM2835_GPIO_FSEL_INPT);
+  bcm2835_gpio_fsel(FIFO_nFF, BCM2835_GPIO_FSEL_INPT);
   
   
   //pull inputs low
@@ -97,6 +98,18 @@ void IO_OFF()
 }
 
 //
+// reset the FIFO data sheet notes minimum delay of ~40ns 
+//
+void reset_FIFO()
+{
+	bcm2835_gpio_clr(FIFO_nRS); //switch FIFO RS LOW
+	delay(1); //wait to reset
+	bcm2835_gpio_set(FIFO_nRS); //switch FIFO RS HIGH
+}
+
+
+
+//
 //set the FIFO based on supplied inByte value and table of pins
 //
 void write_FIFO_byte(unsigned char inByte)
@@ -120,14 +133,14 @@ void write_FIFO_byte(unsigned char inByte)
 }
 
 //
-//read the status flags, output NOT to give high if case positive
+// read the status flags, output NOT (~) to give high if case positive
 //
 unsigned char read_FF()
 {
-	return ~bcm2835_gpio_lev(FIFO_nEF);
+	return (~bcm2835_gpio_lev(FIFO_nEF) & 0x01);
 }
 
 unsigned char read_EF()
 {
-	return ~bcm2835_gpio_lev(FIFO_nFF);
+	return (~bcm2835_gpio_lev(FIFO_nFF) & 0x01);
 }

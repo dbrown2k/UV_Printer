@@ -20,12 +20,27 @@
 #include "uvuart.h"
 
 
+
 void calcFreq(float freq);
-unsigned char pullByte(int byteno);
+unsigned char pullByte(unsigned long inword, int byteno);
+unsigned char byteTranspose(int byteno);
 void initFreq();
 void setFreq(float freq);
 
+void calcVolt(float volt);
+void setVolt(unsigned char SelAdr, float volt);
+void setTrigVolt(float volt);
+void enTrigger(unsigned char en);
 
+void setTECTemp(float temp);
+void enTEC(unsigned char en);
+
+void init8DAC();
+void calcx8volt(float volt);
+void setDAC(float volts[8]);
+
+void initADC();
+float readADC();
 
 #endif /* HEXCALCS_H */
 

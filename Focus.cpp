@@ -9,6 +9,7 @@
 //functions to move the focus motor to the end stop and also to step move it
 //we make use of the overflow of the unsigned char to allow us o continue to loop from 255 to 0
 
+#define		NULLbyte	(0x00)
 
 	/* bipolar stepper code and rubric index
 	 * 0	0	=>	0
@@ -26,7 +27,7 @@ unsigned char focusToStop(unsigned char lastpos)
 {
 	
 	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; //define array for received data
-	unsigned char setval[] = {0x03, 0x00, 0x00, 0x00, 0x00}; //step command
+	unsigned char setval[] = {0x03, 0x00, 0x00, NULLbyte, NULLbyte}; //step command
 	
 	while (pointer_temp[0] == 0)
 		{
@@ -57,7 +58,7 @@ unsigned char focusStep(unsigned char lastpos, int steps)
 {
 	
 	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; //define array for received data
-	unsigned char setval[] = {0x03, 0x00, 0x00, 0x00, 0x00}; //step command
+	unsigned char setval[] = {0x03, 0x00, 0x00, NULLbyte, NULLbyte}; //step command
 	
 
 	
@@ -111,7 +112,7 @@ unsigned char focusStep(unsigned char lastpos, int steps)
 //
 unsigned char readStop()
 {
-	unsigned char setval[] = {0x02, 0x00, 0x00, 0x00, 0x00}; //step command
+	unsigned char setval[] = {0x02, NULLbyte, NULLbyte, NULLbyte, NULLbyte}; //step command
 	tx_UART(setval, 5); //send command
 	
 	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; //define array for received data

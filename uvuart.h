@@ -35,7 +35,7 @@ void config_UART();
 void flush_UART();
 void stop_UART();
 void tx_UART(unsigned char tx_buffer[5], int nBytes);
-void rx_UART(unsigned char rx_buffer[]); //returns pointer need function to parse the length of the array
+unsigned char  rx_UART(unsigned char rx_buffer2[]); //returns pointer need function to parse the length of the array
 
 
 //};

@@ -86,6 +86,8 @@ close(uart0_filestream);
 
 void tx_UART(unsigned char data[5], int nBytes) //always going to be sending a set number of bytes
 {
+	flush_UART(); //flush the buffer before sending next command
+	
 	unsigned char tx_buffer[6];
 	
 	for (int i = 0; i < nBytes; i++) { tx_buffer[i] = data[i];} //transfer data to buffer
@@ -105,24 +107,26 @@ void tx_UART(unsigned char data[5], int nBytes) //always going to be sending a s
 	}
 	
 	delay(2);
-
+	
 }
 
 
 
-
-
-void rx_UART(unsigned char rx_buffer[]) //
+//
+// read UART buffer
+//
+unsigned char rx_UART(unsigned char rx_buffer[]) //
 {
 //----- CHECK FOR ANY RX BYTES -----
+		
 	if (uart0_filestream != -1)
 	{
-		// Read up to 255 characters from the port if they are there
-		
-		int rx_length = read(uart0_filestream, (void*)rx_buffer, 6);		//Filestream, buffer to store in, number of bytes to read (max)
+		// Read up to 6 characters from the port if they are there
+		//Filestream, buffer to store in, number of bytes to read (max)
+		int rx_length = read(uart0_filestream, (void*)rx_buffer, 6); 
 		if (rx_length < 0)
 		{
-			//An error occured (will occur if there are no bytes)
+			//An error occurred (will occur if there are no bytes)
 		}
 		else if (rx_length == 0)
 		{
@@ -136,4 +140,16 @@ void rx_UART(unsigned char rx_buffer[]) //
 		}
 	}
 	
+	unsigned char crc = computeCRC(rx_buffer, 6); //crc the whole string should result in zero if correct
+	
+	flush_UART(); //flush the buffer
+	
+	return crc;
 }
+
+// example usage
+/*  // define array for received data
+	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0};
+	//read buffer and place data into supplied array
+	unsigned char pass = rx_UART(pointer_temp);
+ */

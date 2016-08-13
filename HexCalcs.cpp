@@ -272,6 +272,7 @@ void set8DAC(float volts[8])
 		tmpaddr[3] = pullByte(tempword, 1);
 		tmpaddr[4] = pullByte(tempword, 0);
 		tx_UART(tmpaddr, 5);
+		returnCheck(); // error check the return data
 	}
 	
 	unsigned char vset[] = {0x09, DAC8ADDR, DAC8SET, NULLbyte, NULLbyte}; //apply settings to all DACs
@@ -296,13 +297,13 @@ float readADC()
 {
 	unsigned char requestMeasure[] = {0x07, ADCADDR, 0x8B, NULLbyte, NULLbyte}; 
 	tx_UART(requestMeasure, 5);
+	returnCheck(); // error check the return data
 
 	delay(100); //wait for reading to occur (at 16bit = 15 samples per second, so need at least 66ms
 	
 	unsigned char readCMD[]= {0x08, ADCADDR, NULLbyte, NULLbyte, NULLbyte};
 	tx_UART(readCMD, 5);
 
-	
 	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
 	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
 	

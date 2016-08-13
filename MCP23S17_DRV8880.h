@@ -30,8 +30,6 @@ void init_MCP23S17();
 function to take argument of direction (A/B), step size (A/B), number of steps (A/B)
 for port A or B motors, to allow stepping of both at the same time.
 */
-void stepAB(unsigned char command);
-
 
 
 //component functions for SPI functions

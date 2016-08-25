@@ -62,7 +62,7 @@ bcm2835_init();
 bcm2835_spi_begin();
 bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);      // The default
 bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);                   // The default
-bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_65536);	  // 65536 = 4kHz 64 = 4MHz
+bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);	  // 65536 = 4kHz 64 = 4MHz
 bcm2835_spi_chipSelect(BCM2835_SPI_CS0);                      // The default
 bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);      // The default
 
@@ -80,7 +80,10 @@ void init_MCP23S17()
 	setTorqueB(2); //1 to 4 (25%, 50%, 75%, 100%)
 	setStepSizeA(1); //1th, 2th, 4th, 8th, 16th
 	setStepSizeB(1); //1th, 2th, 4th, 8th, 16th
-	
+	digitalSPIWrite(StepperAddr, IODIRA, IODIR_A); //set DIR_A
+	digitalSPIWrite(StepperAddr, IODIRB, IODIR_B); //set DIR_B
+	digitalSPIWrite(StepperAddr, GPIOA, GPIO_A); //set GPIO_A
+	digitalSPIWrite(StepperAddr, GPIOB, GPIO_B); //set GPIO_B
 }
 
 //function to write data to MCP23S17

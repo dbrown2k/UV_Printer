@@ -197,6 +197,11 @@ void setVolt(unsigned char SelAdr, float volt, float Ref)
 	tx_UART(configTrig, 5);
 	returnCheck(); // error check the return data
 	
+
+	bcm2835_delay(1);
+
+
+	
 	tx_UART(setTrig, 5);
 	returnCheck(); // error check the return data
 }
@@ -207,7 +212,6 @@ void setVolt(unsigned char SelAdr, float volt, float Ref)
 void setTrigVolt(float volt) //set the specified voltage to trigger DAC
 {
 	setVolt(ADDRtrig, volt, REFTrig);
-	returnCheck(); // error check the return data
 }
 
 
@@ -262,7 +266,6 @@ void calcx8volt(float volt)
 //set the voltages based on array of 8 values
 void set8DAC(float volts[8]) 
 {
-	
 	unsigned char tmpaddr[] = {0x09, DAC8ADDR, NULLbyte, NULLbyte, NULLbyte};
 	
 	for (int i = 0; i < 8; i++)
@@ -299,7 +302,7 @@ float readADC()
 	tx_UART(requestMeasure, 5);
 	returnCheck(); // error check the return data
 
-	delay(100); //wait for reading to occur (at 16bit = 15 samples per second, so need at least 66ms
+	bcm2835_delay(100); //wait for reading to occur (at 16bit = 15 samples per second, so need at least 66ms
 	
 	unsigned char readCMD[]= {0x08, ADCADDR, NULLbyte, NULLbyte, NULLbyte};
 	tx_UART(readCMD, 5);
@@ -322,3 +325,77 @@ float readADC()
 
 	return current;
 }
+
+//
+// Check mirror motor speed lock
+//
+unsigned char checkLock()
+{
+	unsigned char initCheck[] = {0x04, NULLbyte, NULLbyte, NULLbyte, NULLbyte}; 
+	tx_UART(initCheck, 5);
+		
+
+	bcm2835_delay(5); //wait for reading to occur
+
+
+	
+	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
+	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
+	
+	if (errorVal == 0x01) {perror("UART RX error");} // issue error if read fails
+	
+	unsigned char x = pointer_temp[1];      
+	
+	return x;
+}
+
+// Set motor speed min speed is 19Hz
+void speedMirMotor(unsigned char speedIn)
+{
+	unsigned char initSpeed[] = {0x05, speedIn, NULLbyte, NULLbyte, NULLbyte}; 
+	tx_UART(initSpeed, 5);
+	returnCheck(); // error check the return data
+	
+}
+
+// Enable mirror motor
+void enMirMotor(unsigned char en)
+{
+	
+	unsigned char initEn[] = {0x06, en, NULLbyte, NULLbyte, NULLbyte}; 
+	tx_UART(initEn, 5);
+	returnCheck(); // error check the return data
+	
+}
+
+
+//
+// UV status
+//
+unsigned char uvLaserStat()
+{
+	unsigned char initCheck[] = {0x0E, NULLbyte, NULLbyte, NULLbyte, NULLbyte}; 
+	tx_UART(initCheck, 5);
+		
+
+	bcm2835_delay(120); //wait for reading to occur 
+
+	
+	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
+	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
+	
+	if (errorVal == 0x01) {perror("UART RX error");} // issue error if read fails
+	
+	unsigned char x = pointer_temp[1];      
+	
+	return x;
+}
+
+// trigger override = D12/uvEN active high
+void uvTrigOveride(unsigned char en)
+{
+	unsigned char initEn[] = {0x10, en, NULLbyte, NULLbyte, NULLbyte}; 
+	tx_UART(initEn, 5);
+	returnCheck(); // error check the return data
+}
+

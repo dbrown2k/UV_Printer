@@ -152,11 +152,11 @@ uint8_t speedMotor(uint8_t mSpeed){ // motor speed in Hertz
 uint8_t setMotor(uint8_t state){
   
   if (state == 0x01 && bitRead(bool_0,0) == 1){  //speedSet = bit 0
-    digitalWrite(mirSS, HIGH);
+    digitalWrite(mirSS, LOW); //active low
     return 0x00;
   }
   else if (state == 0x00){
-    digitalWrite(mirSS, LOW);
+    digitalWrite(mirSS, HIGH);
     return 0x00;
   }
   else {return 0x01;} //return 1 to indicate error, need to set the speed before enabeling
@@ -363,30 +363,37 @@ uint8_t trigLaser(uint8_t state){
 /*=========================================================================================*/
 
 uint8_t uvLaserStat(){
-  pinMode(uvSTAT, INPUT);
-  rBuffer[0] = digitalRead(uvSTAT);
+  
+  uint8_t reading = 0;
+  
+  for (uint8_t i = 0; i < 10; i++)
+  {
+    reading = digitalRead(uvSTAT);
+    if(reading == 1)
+        {
+            break;
+        }
+  }
+  
+  rBuffer[0] = reading;
+  
   return 0x00; //OK
 }
 
 /*=========================================================================================*/
-//015/0x0F override uv laser trigger
+//015/0x0F read trigger laser photodiode
 /*=========================================================================================*/
 
-uint8_t uvLaserTrigger(uint8_t state){
+uint8_t trigReadPhot(){
+
+  float tmp = analogRead(trigPHOT) * (5.0 / 1023.0);
   
-  if (state = 0x01){
-    pinMode(uvSTAT, OUTPUT);
-    digitalWrite(uvSTAT, HIGH);
-    return 0x00; //OK
-  }
-  else {
-    digitalWrite(uvSTAT, LOW);
-    pinMode(uvSTAT, INPUT);
-    return 0x00; //OK
-  }
-  
-  return 0x01; //return 1 to indicate error
+  rBuffer[0] = (uint8_t)(tmp);  //get integer part of the value
+  rBuffer[1] = (uint8_t)(fmod(tmp,1)*10); //get decimal part 
+
+  return 0x00;  
 }
+
 
 
 /*=========================================================================================*/
@@ -652,7 +659,14 @@ void processIncomingCommand ()
       //--------------------------------------------------- 
       else if (Buffer[0] == 0x0F)
       {
-      returnBuffer[0] = uvLaserStat();
+      
+        if (trigReadPhot() == 0x00)
+        {
+          returnBuffer[0] = 0x00;
+          returnBuffer[1] = rBuffer[0];
+          returnBuffer[2] = rBuffer[1];
+        }
+        else {returnBuffer[0] = 0x01;}  
       }
 
       //--------------------------------------------------- 
@@ -712,13 +726,15 @@ pinMode(therm1, INPUT);             //not used
 pinMode(therm2, INPUT);             //not used
 pinMode(focEN, OUTPUT);             //ok
 digitalWrite(focEN, LOW);
+
 pinMode(uvEN, OUTPUT);              //
 digitalWrite(uvEN, LOW);     //FIFO read line pulled up by resistor,  
 pinMode(uvSTAT, INPUT);             //
+
 pinMode(tecEN, OUTPUT);             //ok
 digitalWrite(tecEN, LOW);    //disable TEC at startup
 pinMode(mirSS, OUTPUT);             //ok
-digitalWrite(mirSS, LOW);
+digitalWrite(mirSS, HIGH);
 pinMode(mirLD, INPUT);              //ok
 pinMode(mirCLK, OUTPUT);            //ok
 digitalWrite(mirCLK, LOW);

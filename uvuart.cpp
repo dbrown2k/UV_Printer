@@ -112,7 +112,7 @@ void tx_UART(unsigned char data[5], int nBytes)
 		}
 	}
 	
-	delay(2);
+	bcm2835_delay(2);
 	
 }
 
@@ -167,6 +167,7 @@ unsigned char rx_UART(unsigned char rx_buffer[]) //
 //
 void returnCheck()
 {
+	delay(1);
 	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
 	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
 	

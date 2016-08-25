@@ -17,7 +17,7 @@ float reqTemp()
 	unsigned char setval[] = {0x0B, 0x01, NULLbyte, NULLbyte, NULLbyte};
 	tx_UART(setval, 5); //send command
 	
-	delay(150); //need to wait for data to be fetched and transmitted before reading it
+	bcm2835_delay(150); //need to wait for data to be fetched and transmitted before reading it
 	
 	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
 	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
@@ -41,7 +41,7 @@ float reqHumd()
 	unsigned char setval[] = {0x0B, 0x00, NULLbyte, NULLbyte, NULLbyte};
 	tx_UART(setval, 5); //send command
 	
-	delay(150); //need to wait for data to reach the buffer before reading it
+	bcm2835_delay(150); //need to wait for data to reach the buffer before reading it
 	
 	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
 	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
@@ -65,7 +65,7 @@ float readTEC()
 	unsigned char setval[] = {0x11, NULLbyte, NULLbyte, NULLbyte, NULLbyte};
 	tx_UART(setval, 5); //send command
 	
-	delay(5); //need to wait for data to reach the buffer before reading it
+	bcm2835_delay(5); //need to wait for data to reach the buffer before reading it
 	
 	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
 	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
@@ -80,6 +80,29 @@ float readTEC()
 	return result;	
 }
 
+
+//
+// Request the trigger laser diode voltage
+//
+float readTrigPhot()
+{
+	unsigned char setval[] = {0x0F, NULLbyte, NULLbyte, NULLbyte, NULLbyte};
+	tx_UART(setval, 5); //send command
+	
+	bcm2835_delay(120); //need to wait for data to reach the buffer before reading it
+
+	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; // define array for received data
+	unsigned char errorVal = rx_UART(pointer_temp); //read buffer and place data into supplied array
+	
+	if (errorVal == 0x01) {perror("UART RX error");} // issue error if read fails
+	
+	//std::cout << (int)pointer_temp[1] << std::endl;
+	//std::cout << (int)pointer_temp[2] << std::endl;
+	
+	float result = pointer_temp[1] + ((float)pointer_temp[2]/10);
+	
+	return result;	
+}
 
 
 

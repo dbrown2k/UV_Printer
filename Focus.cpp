@@ -60,8 +60,6 @@ unsigned char focusStep(unsigned char lastpos, int steps)
 	unsigned char pointer_temp[] = {0, 0, 0, 0, 0, 0}; //define array for received data
 	unsigned char setval[] = {0x03, 0x00, 0x00, NULLbyte, NULLbyte}; //step command
 	
-
-	
 	for (int i = 0; i < abs(steps); i++)
 	{
 		if (pointer_temp[0] == 0)

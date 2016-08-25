@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <time.h>
+
 
 //define IO enable pin
 #define enIO 2
@@ -74,9 +76,20 @@ void init_io(); // setup input / output pins
 void IO_ON(); // enable level converters
 void IO_OFF(); // disable level converters
 void reset_FIFO(); // reset FIFO
+void reset_FIFO(unsigned char en); // pull reset high / low
+<<<<<<< HEAD
+void write_FIFO_byte(unsigned int inByte); //write byte to FIFO, includes translation to match circuit wiring
+=======
+>>>>>>> origin/master
 void write_FIFO_byte(unsigned char inByte); //write byte to FIFO, includes translation to match circuit wiring
 unsigned char read_FF(); //read status of full flag
 unsigned char read_EF(); //read status of empty flag
+unsigned int convert_byte(unsigned char inByte); // convert input byte to 32bit gpio value for faster setup
+
+
+
+
+
 
 #endif /* INTUV_H */
 

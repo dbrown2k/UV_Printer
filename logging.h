@@ -23,6 +23,7 @@
 float reqTemp();
 float reqHumd();
 float readTEC();
+float readTrigPhot();
 
 
 

@@ -42,5 +42,13 @@ void set8DAC(float volts[8]);
 void initADC();
 float readADC();
 
+unsigned char checkLock(); //check mirror motor speed lock
+void speedMirMotor(unsigned char speedIn);
+void enMirMotor(unsigned char en);
+
+
+unsigned char uvLaserStat();
+void uvTrigOveride(unsigned char en);
+
 #endif /* HEXCALCS_H */
 

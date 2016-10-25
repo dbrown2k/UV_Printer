@@ -9,17 +9,9 @@
         <group>
             <file>file:/E:/Transporter/workspace/UV_Printer/intuv.h</file>
             <file>file:/E:/Transporter/workspace/UV_Printer/main.cpp</file>
-<<<<<<< HEAD
             <file>file:/E:/Transporter/workspace/UV_Printer/logging.cpp</file>
             <file>file:/E:/Transporter/workspace/UV_Printer/HexCalcs.cpp</file>
             <file>file:/E:/Transporter/workspace/UV_Printer/MCP23S17_DRV8880.cpp</file>
-=======
-            <file>file:/E:/Transporter/workspace/UV_Printer/logging.h</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/logging.cpp</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/HexCalcs.cpp</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/MCP23S17_DRV8880.h</file>
-            <file>file:/E:/Transporter/workspace/UV_Printer/HexCalcs.h</file>
->>>>>>> origin/master
             <file>file:/E:/Transporter/workspace/UV_Printer/intuv.cpp</file>
         </group>
     </open-files>

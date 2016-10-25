@@ -42,7 +42,7 @@ unsigned int stepAcount = 0; //global store for position of print head
 unsigned int stepBcount = 0; //global store for board position
 unsigned char focMotor = 0x00; //use the first two bits; 00, 01, 10, 11 (0-3)
 
-unsigned int imageStrip[FIFO_depth][Page_width_max]; // Cache data for strip to memory, load using translation function
+unsigned int imageStrip[FIFO_depth][Page_width_max]; // Cache 32bit data for strip to memory, load using translation function
 
 
 
@@ -87,9 +87,9 @@ int main(int argc, char **argv)
 	set8DAC(DAC8volts);
 
 	
-	//std::cout << (float)readADC() << std::endl; // make reading from ADC	
-	//std::cout << (float)reqTemp() << std::endl; // make reading from the temp sensor
-	//std::cout << (float)reqHumd() << std::endl; // make reading from the humidity sensor
+	std::cout << (float)readADC() << std::endl; // make reading from ADC	
+	std::cout << (float)reqTemp() << std::endl; // make reading from the temp sensor
+	std::cout << (float)reqHumd() << std::endl; // make reading from the humidity sensor
 	
 	
 	//setTECTemp(25); // need to set the relationship between temp and DAC voltage
@@ -125,6 +125,7 @@ int main(int argc, char **argv)
 	}
 	
 	
+
 	setEnable(0);
 
 	 

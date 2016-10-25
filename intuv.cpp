@@ -28,8 +28,6 @@ int tmp = 0;
 
 unsigned char count = 0;
 
-int tmp = 0;
-
 
 
 void setup_io()
@@ -135,7 +133,7 @@ void write_FIFO_byte(unsigned int inByte)
 	
 	bcm2835_gpio_write_mask(inByte, FIFO_mask);	
 	
-	//write value to FIFO, clock low, clock high, needs delay for capacitance in the line
+	//write value to FIFO, clock low, clock high, needs delay due to capacitance in the line
 	bcm2835_gpio_clr(FIFO_nW);
 	++count;
 	++count;
@@ -173,7 +171,7 @@ unsigned char read_EF()
 
 
 //
-// convert 8 bit byte to GPIO 32bit byte using positions for each bit in FIFOtable array
+// convert 8 bit char byte to GPIO 32bit int byte using positions for each bit in FIFOtable array
 //
 unsigned int convert_byte(unsigned char inByte)
 {
@@ -185,7 +183,7 @@ unsigned int convert_byte(unsigned char inByte)
 		if ( ((temp >> i) & 1) == 1) //read bit value at position i in Byte
 		{
 			//only need to change to 1 as initialised for zero
-			//FIFOtable[i]
+			//FIFOtable[i] hold bit positions for outByte
 			outByte ^= (-1 ^ outByte) & (1 << FIFOtable[i]);
 		}
 		
